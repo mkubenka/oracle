@@ -3012,6 +3012,20 @@ describe("unified Intelligence picker with Advanced -> Effort submenu", () => {
     expect(dom.getSelectedTier()).toBe("High");
   });
 
+  it("does not mistake a localized Advanced toggle for an effort tier", async () => {
+    // German "Erweitert" is both the Advanced disclosure label and one of the
+    // `extended` tier tokens. Matching it as a tier would satisfy the flat scan,
+    // skip the descent, and click the toggle instead of an effort row.
+    const dom = buildDom("Instant");
+    dom.advancedToggle.textContent = "Erweitert";
+    await expect(run(dom.documentStub, "extended")).resolves.toEqual({
+      status: "switched",
+      label: "High",
+    });
+    expect(dom.getSelectedTier()).toBe("High");
+    expect(dom.effortOpener.clicks).toBeGreaterThan(0);
+  });
+
   it("never settles on Pro for a lower tier when no model is supplied", async () => {
     // With no desiredModel the model kind is inferred from the composer pill. A pill
     // showing the Pro *effort* must not read as a Pro *model*, or the Pro-row

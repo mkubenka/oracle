@@ -453,11 +453,19 @@ function buildThinkingTimeExpression(
       diagnostic: collectPickerDiagnostic(),
     });
     const findOptionInMenu = (menu, modelKindOverride = null) => {
-      // A node that opens a submenu names the thing behind it, not a tier you can
-      // pick. The unified picker's "Model" row can read "ModelGPT-5.6 Pro", which
-      // would otherwise satisfy a Pro request and get clicked instead of the tier.
+      // Container controls reveal other controls; they are not tiers you can pick.
+      // Two shapes exist and both can collide with a tier label: a submenu opener
+      // ("ModelGPT-5.6 Pro" would satisfy a Pro request) and a disclosure toggle
+      // (German "Erweitert" is literally one of the extended tokens, so the
+      // Advanced toggle would satisfy an extended request and be clicked in place
+      // of the tier). Detect them structurally rather than by label: a real tier row
+      // carries a checked state, while a container carries expansion state.
+      const isContainerControl = (node) =>
+        node?.getAttribute?.('aria-haspopup') === 'menu' ||
+        (node?.getAttribute?.('aria-expanded') !== null &&
+          node?.getAttribute?.('aria-checked') === null);
       const items = Array.from(menu.querySelectorAll(MENU_ITEM_SELECTOR)).filter(
-        (item) => item?.getAttribute?.('aria-haspopup') !== 'menu',
+        (item) => !isContainerControl(item),
       );
       const modelKind = modelKindOverride || effectiveTargetModelKind();
       if (modelKind === 'pro') {
