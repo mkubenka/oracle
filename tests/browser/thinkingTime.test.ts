@@ -3078,7 +3078,7 @@ describe("unified Intelligence picker with Advanced -> Effort submenu", () => {
       };
       await expect(
         ensureThinkingTime(runtime as never, "pro", (() => {}) as never, "gpt-5.6-sol"),
-      ).rejects.toThrow(/refusing to submit without confirmed Pro/);
+      ).rejects.toThrow(/refusing to submit without confirmed Pro\.$/);
     }
   });
 

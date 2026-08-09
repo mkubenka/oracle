@@ -111,8 +111,9 @@ export async function ensureThinkingTime(
       await logDomFailure(Runtime, logger, "thinking-time-unknown");
       logPickerDiagnostic(result, logger);
       if (strictProEffort) {
+        const target = level === "pro" ? "Pro" : "Pro Extended";
         throw new Error(
-          `Thinking time: unknown outcome selecting ${capitalizedLevel}; refusing to submit without confirmed Pro Extended.`,
+          `Thinking time: unknown outcome selecting ${capitalizedLevel}; refusing to submit without confirmed ${target}.`,
         );
       }
       logger(
@@ -128,7 +129,7 @@ export async function ensureThinkingTime(
 /**
  * Best-effort selection of a thinking time level in ChatGPT's composer pill menu.
  * Safe by default: if the pill/menu/option isn't present, we continue without throwing.
- * @param level - The thinking time intensity: 'light', 'standard', 'extended', 'extra-high', or 'heavy'
+ * @param level - The thinking time intensity: 'light', 'standard', 'extended', 'extra-high', 'pro', or 'heavy'
  */
 export async function ensureThinkingTimeIfAvailable(
   Runtime: ChromeClient["Runtime"],
